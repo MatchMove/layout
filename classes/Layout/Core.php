@@ -115,6 +115,13 @@ class Layout_Core
         $this->template->$name = $value;
     }
     
+    public function __isset($name)
+    {
+        $name = strtolower($name);
+        
+        return isset($this->template->$name);
+    }
+    
 	/**
 	 * Magic method, returns the value set in the view.
 	 *
