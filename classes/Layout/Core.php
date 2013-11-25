@@ -222,7 +222,20 @@ class Layout_Core
     {
         try
         {
-            return $this->template->render();
+            
+            if (Kohana::$profiling === TRUE)
+            {
+                $benchmark = Profiler::start(get_class($this), 'render');
+            }
+            
+            $render = $this->template->render();
+            
+            if (isset($benchmark))
+            {
+                Profiler::stop($benchmark);
+            }
+
+            return $render;
         }
         catch (Exception $e)
         {

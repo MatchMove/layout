@@ -50,11 +50,21 @@ class Layout_Controller extends Controller
      */
     public function before()
     {
+        if (Kohana::$profiling === TRUE)
+        {
+            $benchmark = Profiler::start(get_class(), __function__);
+        }
+        
         parent::before();
 
         // Just in case the whole controller does not need rendiring.
         if ($this->auto_render !== TRUE)
         {
+            if (isset($benchmark))
+            {
+                Profiler::stop($benchmark);
+            }
+        
             return true;
         }
         
@@ -69,6 +79,11 @@ class Layout_Controller extends Controller
         //Render the layout as ajax.
         if ($this->request->is_ajax())
         {
+            if (isset($benchmark))
+            {
+                Profiler::stop($benchmark);
+            }
+            
             return $this->layout = new View(Layout_Parser::evaluate($body));
         }
         
@@ -84,6 +99,11 @@ class Layout_Controller extends Controller
         {
             $this->layout->set_footer($this->footer);
         }
+        
+        if (isset($benchmark))
+        {
+            Profiler::stop($benchmark);
+        }
     }
 
     /**
@@ -91,11 +111,21 @@ class Layout_Controller extends Controller
      */
     public function after()
     {
+        if (Kohana::$profiling === TRUE)
+        {
+            $benchmark = Profiler::start(get_class(), __function__);
+        }
+        
         if ($this->auto_render === TRUE)
         {
             $this->response->body($this->layout);
         }
 
         parent::after();
+
+        if (isset($benchmark))
+        {
+            Profiler::stop($benchmark);
+        }
     }
 }
