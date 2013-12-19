@@ -17,11 +17,20 @@ class Layout_URL extends Kohana_URL {
  */
     public static function href($route_name, $params = null)
     {
-        if (!is_array($params))
+	if (!is_array($params))
         {
             $params = array('id' => $params);
         }
+        try
+        {
+        	$route = Route::get($route_name);
+        }
+        catch (Kohana_Exception $e)
+        {
+        	$route = Route::get('Default');
+        }
         
-        return URL::site(Route::get($route_name)->uri($params));
+
+        return URL::site($route->uri($params));
     }
 }
