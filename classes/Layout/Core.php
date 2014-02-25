@@ -210,45 +210,6 @@ class Layout_Core
     {
         return $this->template;
     }
-
-    public static function compress($html)
-    {
-        if (Kohana::$profiling === TRUE)
-        {
-            $benchmark = Profiler::start(get_class(), __function__);
-        }
-
-        preg_match_all('!(<(?:code|pre).*>[^<]+</(?:code|pre)>)!',$html, $pre); //exclude pre or code tags
-
-        $html = preg_replace('!<(?:code|pre).*>[^<]+</(?:code|pre)>!', '#pre#', $html); //removing all pre or code tags
-
-        $html = preg_replace('#<!Ð[^\[].+Ð>#', '', $html); //removing HTML comments
-
-        $html = preg_replace('/[\r\n\t]+/', ' ', $html); //remove new lines, spaces, tabs
-
-        $html = preg_replace('/>[\s]+</', '><', $html); //remove new lines, spaces, tabs
-
-        $html = preg_replace('/[\s]+/', ' ', $html); //remove new lines, spaces, tabs
-
-        if(!empty($pre[0]))
-        {
-            $count = count($pre[0]);
-            $i = 0;
-            
-            do
-            {
-                $html = preg_replace('!#pre#!', $pre[0][$i], $html, 1); //putting back pre|code tags
-            } while (++$i < $count);
-        }
-
-        if (isset($benchmark))
-        {
-            Profiler::stop($benchmark);
-        }
-
-        return $html;
-    }
-
     
     /**
      * Magic method, returns the output of the template [View::render].
@@ -258,9 +219,10 @@ class Layout_Core
      */
     public function __toString()
     {
+        $render = '';
+        
         try
         {
-            
             if (Kohana::$profiling === TRUE)
             {
                 $benchmark = Profiler::start(get_class($this), 'render');
@@ -272,15 +234,13 @@ class Layout_Core
             {
                 Profiler::stop($benchmark);
             }
-
-            return Layout::compress($render);
         }
         catch (Exception $e)
         {
             // Display the exception message
             Kohana_Exception::handler($e);
-
-            return '';
         }
+        
+        return $render;
     }
 }
