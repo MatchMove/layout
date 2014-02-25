@@ -47,10 +47,43 @@ class Layout_View extends Kohana_View {
         return $html;
     }
     
-    public function render($file = NULL)
+    
+    protected static function capture($kohana_view_filename, array $kohana_view_data)
     {
-        $output = parent::render($file);
-        
-        return View::compress($output);
+        // Import the view variables to local namespace
+        extract($kohana_view_data, EXTR_SKIP);
+
+        if (View::$_global_data)
+        {
+            // Import the global view variables to local namespace
+            extract(View::$_global_data, EXTR_SKIP | EXTR_REFS);
+        }
+
+        // Capture the view output
+        if (!in_array('View::compress', ob_list_handlers()))
+        {
+            ob_start('View::compress');
+        }
+        else
+        {
+            ob_start();
+        }
+
+        try
+        {
+            // Load the view within the current scope
+            include $kohana_view_filename;
+        }
+        catch (Exception $e)
+        {
+            // Delete the output buffer
+            ob_end_clean();
+
+            // Re-throw the exception
+            throw $e;
+        }
+
+        // Get the captured output and close the buffer
+        return ob_get_clean();
     }
 }

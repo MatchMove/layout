@@ -87,7 +87,7 @@ class Layout_Core
         }
         else
         {
-            $view = View::factory($path);
+            $view = new View($path);
             $view->_id = $path;
         }
     }
