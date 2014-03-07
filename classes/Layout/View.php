@@ -43,8 +43,9 @@ class Layout_View extends Kohana_View {
         {
             Profiler::stop($benchmark);
         }
-
-        return ob_gzhandler($html, $mode);
+        
+        return $html;
+        // return ob_gzhandler($html, $mode);
     }
     
     
