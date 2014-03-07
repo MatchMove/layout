@@ -9,7 +9,7 @@
  */
 class Layout_View extends Kohana_View {
     
-    public static function compress($html)
+    public static function compress($html, $mode)
     {
         if (Kohana::$profiling === TRUE)
         {
@@ -44,7 +44,7 @@ class Layout_View extends Kohana_View {
             Profiler::stop($benchmark);
         }
 
-        return $html;
+        return ob_gzhandler($html, $mode);
     }
     
     
